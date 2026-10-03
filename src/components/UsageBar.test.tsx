@@ -49,6 +49,13 @@ describe("QuotaBar", () => {
     expect(markup).not.toContain("% used");
   });
 
+  it("shows the available banked reset count, including zero", () => {
+    expect(renderQuotaBar(makeQuotaData({ availableResetCount: 1 }))).toContain("1 usage reset available");
+    expect(renderQuotaBar(makeQuotaData({ availableResetCount: 0 }))).toContain("0 usage resets available");
+    expect(renderQuotaBar(makeQuotaData({ availableResetCount: 2 }))).toContain("2 usage resets available");
+    expect(renderQuotaBar(makeQuotaData())).not.toContain("usage resets available");
+  });
+
   it("uses natural same-day wording for 5-hour resets", () => {
     const markup = renderQuotaBar(makeQuotaData());
 
