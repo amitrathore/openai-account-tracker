@@ -58,7 +58,7 @@ export function QuotaBar({ quotaData, accountId, sparklineStyle }: {
   accountId: string;
   sparklineStyle?: SparklineStyle;
 }) {
-  const { primary, secondary, fetchedAt } = quotaData;
+  const { primary, secondary, fetchedAt, availableResetCount } = quotaData;
   const [history, setHistory] = useState<QuotaHistoryItem[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -84,6 +84,11 @@ export function QuotaBar({ quotaData, accountId, sparklineStyle }: {
         <h4 className="text-xs font-semibold uppercase tracking-wider text-zinc-500">Live Balance</h4>
         <span className="text-xs text-zinc-500 dark:text-zinc-600">{formatQuotaFetchedLabel(fetchedAt)}</span>
       </div>
+      {availableResetCount !== undefined && (
+        <p className="text-xs font-medium text-zinc-600 dark:text-zinc-400">
+          {availableResetCount} usage {availableResetCount === 1 ? "reset" : "resets"} available
+        </p>
+      )}
       {primary && (
         <QuotaWindow slot="primary" label={quotaLabelFor(primary, "primary")}
           window={primary} buckets={pBuckets} loading={loading}

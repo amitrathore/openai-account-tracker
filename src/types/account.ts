@@ -139,6 +139,8 @@ export interface QuotaData {
   email?: string;
   /** e.g. "plus", "pro", "free" */
   planType?: string;
+  /** Banked Codex usage resets available for this account, when supplied by the app-server. */
+  availableResetCount?: number;
   /** 5-hour rolling window */
   primary: QuotaWindow | null;
   /** 7-day rolling window */

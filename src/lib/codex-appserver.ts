@@ -272,13 +272,14 @@ export async function fetchQuota(codexHomePath: string): Promise<QuotaData> {
     }
 
     // Parse the GetAccountRateLimitsResponse
-    // Shape: { rateLimits: RateLimitSnapshot, rateLimitsByLimitId: {...} | null }
+    // Shape: { rateLimits: RateLimitSnapshot, rateLimitsByLimitId: {...} | null, rateLimitResetCredits: {...} | null }
     const qr = quotaResult as Record<string, unknown>;
     const rateLimits = (qr.rateLimits ?? qr) as Record<string, unknown>;
 
     const primary = parseWindow(rateLimits.primary as Record<string, unknown> | null);
     const secondary = parseWindow(rateLimits.secondary as Record<string, unknown> | null);
     const planType = (rateLimits.planType as string | null) ?? undefined;
+    const availableResetCount = parseAvailableResetCount(qr.rateLimitResetCredits);
 
     // Get email from account result
     // Actual server shape: { account: { type: "chatgpt", email: string, planType: string }, requiresOpenaiAuth: bool }
@@ -294,6 +295,7 @@ export async function fetchQuota(codexHomePath: string): Promise<QuotaData> {
       fetchedAt: new Date().toISOString(),
       email,
       planType,
+      availableResetCount,
       primary,
       secondary,
     };
@@ -301,6 +303,14 @@ export async function fetchQuota(codexHomePath: string): Promise<QuotaData> {
   } finally {
     await closeSession(session, shouldPersistAuth);
   }
+}
+
+export function parseAvailableResetCount(value: unknown): number | undefined {
+  if (!value || typeof value !== "object") return undefined;
+  const count = (value as Record<string, unknown>).availableCount;
+  return typeof count === "number" && Number.isSafeInteger(count) && count >= 0
+    ? count
+    : undefined;
 }
 
 function parseWindow(w: Record<string, unknown> | null | undefined): QuotaData["primary"] {
