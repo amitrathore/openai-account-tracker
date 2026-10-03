@@ -85,7 +85,7 @@ export function QuotaBar({ quotaData, accountId, sparklineStyle }: {
         <span className="text-xs text-zinc-500 dark:text-zinc-600">{formatQuotaFetchedLabel(fetchedAt)}</span>
       </div>
       {availableResetCount !== undefined && (
-        <p className="text-xs font-medium text-zinc-600 dark:text-zinc-400">
+        <p className="text-xs font-medium text-emerald-500 dark:text-emerald-400">
           {availableResetCount} usage {availableResetCount === 1 ? "reset" : "resets"} available
         </p>
       )}
