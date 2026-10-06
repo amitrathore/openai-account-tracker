@@ -275,9 +275,8 @@ function quotaLabelFor(w: NonNullable<QuotaData["primary"]>, slot: "primary" | "
 function formatResetLabel(resetsAt: number | null): string | null {
   if (!resetsAt) return null;
 
-  const tz = "Africa/Johannesburg";
-  const reset = getDateTimeParts(new Date(resetsAt * 1000), tz);
-  const today = getDateTimeParts(new Date(), tz);
+  const reset = getDateTimeParts(new Date(resetsAt * 1000));
+  const today = getDateTimeParts(new Date());
   const days = Math.max(0, calendarDayDiff(today, reset));
   const time = `${reset.hour}:${reset.minute} ${reset.dayPeriod}`;
   const full = `${reset.weekday}, ${reset.month} ${reset.day} · ${time}`;
@@ -288,15 +287,15 @@ function formatResetLabel(resetsAt: number | null): string | null {
   return `in ${days} day${days === 1 ? "" : "s"} on ${full}`;
 }
 
-function getDateTimeParts(date: Date, tz: string) {
+function getDateTimeParts(date: Date) {
   const fmt = new Intl.DateTimeFormat("en-US", {
-    timeZone: tz, weekday: "short", month: "short", day: "numeric", year: "numeric",
+    weekday: "short", month: "short", day: "numeric", year: "numeric",
     hour: "numeric", minute: "2-digit", hour12: true,
   });
   const p = fmt.formatToParts(date);
   const g = (t: string) => p.find(x => x.type === t)?.value ?? "";
   const hour24 = Number(new Intl.DateTimeFormat("en-US", {
-    timeZone: tz, hour: "2-digit", hourCycle: "h23",
+    hour: "2-digit", hourCycle: "h23",
   }).formatToParts(date).find(x => x.type === "hour")?.value);
   return {
     year: Number(g("year")), month: g("month"), day: Number(g("day")),

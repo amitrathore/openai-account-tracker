@@ -26,12 +26,30 @@ function makeQuotaData(overrides: Partial<QuotaData> = {}): QuotaData {
 
 describe("QuotaBar", () => {
   beforeEach(() => {
+    vi.stubEnv("TZ", "Africa/Johannesburg");
     vi.useFakeTimers();
     vi.setSystemTime(new Date("2026-04-08T16:00:00.000Z"));
   });
 
   afterEach(() => {
     vi.useRealTimers();
+    vi.unstubAllEnvs();
+  });
+
+  it("uses the viewer's timezone for the reset date, time, and day-part", () => {
+    vi.stubEnv("TZ", "America/Los_Angeles");
+    vi.setSystemTime(new Date("2026-10-06T21:00:00.000Z"));
+    const markup = renderQuotaBar(makeQuotaData({
+      primary: {
+        usedPercent: 23,
+        resetsAt: Math.floor(new Date("2026-10-06T23:24:00.000Z").getTime() / 1000),
+        windowDurationSecs: 18_000,
+      },
+      secondary: null,
+    }));
+
+    expect(markup).toContain("Resets this afternoon at 4:24 PM");
+    expect(markup).not.toContain("tomorrow night");
   });
 
   it("renders balance-first live quota copy with remaining widths", () => {
